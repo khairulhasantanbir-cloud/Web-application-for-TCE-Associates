@@ -171,7 +171,7 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm uppercase tracking-widest text-white/50">Email</p>
-                    <p className="text-lg font-medium">contact@tceltd.uk</p>
+                    <p className="text-lg font-medium">info@tceassocs.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
