@@ -58,6 +58,19 @@ export default function Footer() {
             <a href="#" className="hover:text-accent transition-colors">Privacy</a>
             <a href="#" className="hover:text-accent transition-colors">Terms</a>
             <a href="#" className="hover:text-accent transition-colors">CIOL Ethics</a>
+            <a
+              href="https://www.facebook.com/share/1CBkoVjwYK/?mibextid=wwXIfr"
+              className="hover:text-accent transition-colors flex items-center gap-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://www.facebook.com/images/fb_icon_325x325.png"
+                alt="Facebook"
+                className="h-5 w-5 object-contain"
+              />
+              <span className="text-[11px]">Facebook</span>
+            </a>
           </div>
         </div>
       </div>

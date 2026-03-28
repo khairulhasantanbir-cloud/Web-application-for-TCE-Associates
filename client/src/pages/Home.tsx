@@ -1,28 +1,83 @@
+import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ShieldCheck, FileText, Languages, CheckCircle2, Award, Scale, Mail, Phone, MapPin } from "lucide-react";
-import heroImage from "@/assets/images/hero-office.jpg";
+import { toast } from "@/hooks/use-toast";
+import { ShieldCheck, FileText, Languages, CheckCircle2, Award, Scale, Mail, Phone, MapPin, MessageCircle, Globe } from "lucide-react";
 import tanvirImage from "@/assets/images/tanvir.jfif";
 
 export default function Home() {
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSending) {
+      return;
+    }
+
+    setIsSending(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contactForm),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Unable to send message");
+      }
+
+      toast({
+        title: "Message sent",
+        description: result.message || "Your inquiry has been delivered.",
+      });
+      setContactForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+      toast({
+        title: "Send failed",
+        description:
+          error?.message ||
+          "There was a problem sending your message. Please try again later.",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleChange = (field: keyof typeof contactForm, value: string) => {
+    setContactForm((prev) => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       
       {/* HERO SECTION */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex items-center min-h-[80vh] bg-primary">
         <div className="absolute inset-0 z-0 opacity-20">
-          <img 
-            src={heroImage} 
-            alt="Professional background" 
-            className="w-full h-full object-cover"
+          {/* using object-contain to ensure the entire CIOL logo is visible
+              even if it means letterboxing within the hero section */}
+          <img
+            src="https://www.ciol.org.uk/sites/default/files/Jubilee%20Crest.png"
+            alt="CIOL logo background"
+            className="w-full h-full object-contain"
           />
         </div>
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl animate-in fade-in duration-1000">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/20 border border-secondary/30 text-secondary mb-6">
-              <span className="text-xs font-bold tracking-widest uppercase text-white/90">MCIL Member | UK Registered Company</span>
+              <span className="text-xs font-bold tracking-widest uppercase text-white/90">CIOL Member | UK Registered Company</span>
             </div>
             
             <h1 className="text-4xl md:text-6xl font-display font-bold text-white leading-tight mb-6">
@@ -83,17 +138,41 @@ export default function Home() {
             <div className="order-2 lg:order-1">
               <h2 className="text-secondary font-bold uppercase tracking-widest text-sm mb-4">Director's Testimony</h2>
               <h3 className="text-3xl md:text-4xl font-display text-primary mb-8 leading-tight">Expert Legal Linguistics & Professional Integrity</h3>
-              <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
+              <div className="space-y-6 text-black text-lg leading-relaxed">
                 <p>
-                  I am a UK-based legal linguist and Director of TCE & Associates Limited. As a Full Member (MCIL) of the Chartered Institute of Linguists, I provide certified Bengali to English translation and professional interpreting services across the United Kingdom.
+                  I am a UK-based legal linguist and Director of TCE & Associates Limited. As a Full Member (MCIL) of The Chartered Institute of Linguists, I provide certified Bengali to English translation and professional interpreting services across the United Kingdom.
                 </p>
                 <p>
                   With an LL.B (Hons) and LL.M (UK), I specialise in legal and immigration documentation. My work is guided by accuracy, confidentiality, neutrality and professional integrity. Every document is carefully reviewed to meet UK legal and official standards.
                 </p>
               </div>
               <div className="mt-10 pt-8 border-t border-gray-200">
-                <p className="font-display font-bold text-primary">Tanvir Chowdhury Emad</p>
-                <p className="text-sm uppercase tracking-widest text-secondary font-semibold">LL.B (Hons), LL.M (UK), MCIL</p>
+                <p className="font-display font-bold text-black text-2xl md:text-3xl">
+                  Tanvir Chowdhury Emad
+                </p>
+                <p className="text-sm uppercase tracking-widest text-black font-bold">
+                  LL.B (Hons), LL.M (UK), MCIL
+                </p>
+                <p className="text-sm text-black mt-2">
+                  Director – TCE & Associates Limited
+                </p>
+                <p className="text-sm text-black">
+                  Company No: 17058229
+                </p>
+                <p className="text-sm text-black mt-4">
+                  Member of The Chartered Institute of Linguists (MCIL)
+                </p>
+                <p className="text-sm text-black">
+                  CIOL number: 96489
+                </p>
+                <p className="text-sm text-black">
+                  <a
+                    href="http://www.ciol.org.uk/96489"
+                    className="text-secondary hover:underline"
+                  >
+                    http://www.ciol.org.uk/96489
+                  </a>
+                </p>
               </div>
             </div>
             
@@ -139,17 +218,21 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             {[
-              "Chartered Institute of Linguists (MCIL)",
-              "LL.B (Hons)",
-              "LL.M (UK)",
-              "Commissioner for Oaths",
-              "UK Registered Company",
-              "Data Protection Registered",
-              "Professional Indemnity Insured"
+              { title: "Chartered Institute of Linguists (MCIL)", icon: Award },
+              { title: "LL.B (Hons)", icon: FileText },
+              { title: "LL.M (UK)", icon: FileText },
+              { title: "Commissioner for Oaths", icon: Scale },
+              { title: "UK Registered Company", icon: Globe },
+              { title: "Data Protection Registered", icon: ShieldCheck },
+              { title: "Professional Indemnity Insured", icon: ShieldCheck }
             ].map((cert, i) => (
-              <div key={i} className="border border-gray-100 p-6 bg-muted/30 aspect-square flex items-center justify-center text-center group hover:border-secondary transition-colors">
+              <div
+                key={i}
+                className="border border-gray-100 p-6 bg-muted/30 aspect-square flex flex-col items-center justify-center text-center group hover:border-secondary transition-colors"
+              >
+                <cert.icon className="h-8 w-8 text-secondary mb-2" strokeWidth={1.5} />
                 <span className="text-xs font-bold uppercase tracking-tighter text-primary/70 group-hover:text-secondary transition-colors">
-                  {cert}
+                  {cert.title}
                 </span>
               </div>
             ))}
@@ -171,16 +254,25 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm uppercase tracking-widest text-white/50">Email</p>
-                    <p className="text-lg font-medium">contact@tceltd.uk</p>
+                    <p className="text-lg font-medium">info@tceassocs.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-white/5 flex items-center justify-center">
-                    <Phone className="h-6 w-6 text-secondary" />
+                    <MessageCircle className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <p className="text-sm uppercase tracking-widest text-white/50">Phone</p>
-                    <p className="text-lg font-medium">+447949222201</p>
+                    <p className="text-sm uppercase tracking-widest text-white/50">WhatsApp Business</p>
+                    <p className="text-lg font-medium">
+                      <a
+                        href="https://wa.me/447949222201"
+                        className="hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        +447949222201
+                      </a>
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -189,34 +281,55 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm uppercase tracking-widest text-white/50">Address</p>
-                    <p className="text-lg font-medium">54 Credon Road, E13 9J</p>
+                    <p className="text-lg font-medium">54 Credon Road, London E13 9BJ</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="bg-white p-8 lg:p-12 text-primary">
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest">Full Name</label>
-                    <Input className="rounded-none border-gray-200 focus:border-secondary" />
+                    <Input
+                      value={contactForm.name}
+                      onChange={(event) => handleChange("name", event.target.value)}
+                      className="rounded-none border-gray-200 focus:border-secondary"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest">Email Address</label>
-                    <Input type="email" className="rounded-none border-gray-200 focus:border-secondary" />
+                    <Input
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(event) => handleChange("email", event.target.value)}
+                      className="rounded-none border-gray-200 focus:border-secondary"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest">Subject</label>
-                  <Input className="rounded-none border-gray-200 focus:border-secondary" />
+                  <Input
+                    value={contactForm.subject}
+                    onChange={(event) => handleChange("subject", event.target.value)}
+                    className="rounded-none border-gray-200 focus:border-secondary"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest">Message</label>
-                  <Textarea className="rounded-none border-gray-200 focus:border-secondary min-h-[150px]" />
+                  <Textarea
+                    value={contactForm.message}
+                    onChange={(event) => handleChange("message", event.target.value)}
+                    className="rounded-none border-gray-200 focus:border-secondary min-h-[150px]"
+                  />
                 </div>
-                <Button className="w-full bg-accent text-white hover:bg-accent/90 rounded-none h-14 font-bold uppercase tracking-widest">
-                  Send Inquiry
+                <Button
+                  type="submit"
+                  disabled={isSending}
+                  className="w-full bg-accent text-white hover:bg-accent/90 rounded-none h-14 font-bold uppercase tracking-widest"
+                >
+                  {isSending ? "Sending..." : "Send Inquiry"}
                 </Button>
               </form>
             </div>
