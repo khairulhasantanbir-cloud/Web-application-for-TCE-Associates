@@ -281,7 +281,7 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm uppercase tracking-widest text-white/50">Address</p>
-                    <p className="text-lg font-medium">77 Haig Road West, E13 9LJ</p>
+                    <p className="text-lg font-medium">77 Haig Road, London E13 9LJ</p>
                   </div>
                 </div>
               </div>
